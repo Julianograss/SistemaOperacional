@@ -14,12 +14,14 @@ public class SistemaOperacional extends JFrame{
 
         JPanel pnlCentralizar = new JPanel();
         pnlCentralizar.setLayout(new BoxLayout(pnlCentralizar, BoxLayout.Y_AXIS));
-        //pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(175, 200, 100, 200));
         pnlCentralizar.setBackground(Color.GRAY);
         pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(150, 0, 0, 0));
 
-        JPanel pnlPainelLogin = new JPanel(new GridLayout(2,2, 10,50));
-        pnlPainelLogin.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel pnlPainelLogin = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.CENTER;
+        c.insets = new Insets(10, 20, 10, 20);
+        pnlPainelLogin.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         pnlPainelLogin.setMaximumSize(new Dimension(300, 150));
         pnlPainelLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
         pnlPainelLogin.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -27,10 +29,10 @@ public class SistemaOperacional extends JFrame{
 
         JLabel lblLogMsg = new JLabel("Login", SwingConstants.CENTER);
         lblLogMsg.setFont(new Font("Arial", Font.BOLD, 21));
-        lblLogMsg.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblLogMsg.setAlignmentY(Component.TOP_ALIGNMENT);
 
         JButton btnEntrar = new JButton("Entrar");
-        btnEntrar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnEntrar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         btnEntrar.setMaximumSize(new Dimension(150, 30));
 
         addWindowStateListener(new WindowStateListener() {
@@ -53,21 +55,35 @@ public class SistemaOperacional extends JFrame{
 
         JLabel lblUsuario = new JLabel("Usuario: ");
         lblUsuario.setFont(new Font("Arial", Font.PLAIN, 13));
-        pnlPainelLogin.add(lblUsuario);
 
         JTextField txtUsuario = new JTextField();
         txtUsuario.setFont(new Font("Arial", Font.LAYOUT_LEFT_TO_RIGHT, 10));
-        pnlPainelLogin.add(txtUsuario);
 
         JLabel lblSenha = new JLabel("Senha: ");
         lblSenha.setFont(new Font("Arial", Font.PLAIN, 13));
-        pnlPainelLogin.add(lblSenha);
 
-        pnlPainelLogin.add(lblLogMsg, BorderLayout.NORTH);
-        pnlCentralizar.add(Box.createRigidArea(new Dimension(0, 10)));
+        JPasswordField pswSenhaUsu = new JPasswordField();
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 2;
+        pnlPainelLogin.add(lblLogMsg, c);
+        c.gridx = 0;
+        c.gridy = 1;
+        pnlPainelLogin.add(lblUsuario, c);
+        c.gridx = 0;
+        c.gridy = 2;
+        pnlPainelLogin.add(lblSenha, c);
+        c.gridx = 1;
+        c.gridy = 1;
+        pnlPainelLogin.add(txtUsuario, c);
+        c.gridx = 1;
+        c.gridy = 2;
+        pnlPainelLogin.add(pswSenhaUsu, c);
+
+
+
         pnlCentralizar.add(pnlPainelLogin);
-        pnlCentralizar.add(Box.createRigidArea(new Dimension(0, 20)));
-        pnlCentralizar.add(btnEntrar);
         
         add(pnlCentralizar);
         setVisible(true);
