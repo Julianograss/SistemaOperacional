@@ -108,7 +108,7 @@ public class SistemaOperacional extends JFrame{
         c.gridy = 3;
         c.gridwidth = 2;
         pnlPainelLogin.add(btnEntrar, c);
-        c.gridwidth = 0;
+        c.gridwidth = 1;
 
         btnEntrar.addActionListener(e -> {
             janelaOperador();
@@ -231,3 +231,4 @@ public class SistemaOperacional extends JFrame{
         new SistemaOperacional();
     }
 }
+
