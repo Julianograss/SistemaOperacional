@@ -1,10 +1,17 @@
 package atividade3;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.*;
 import java.awt.event.*;
 
 public class SistemaOperacional extends JFrame{
+    public String[] colunas = {"Cód", "Descrição", "Qtd", "V.Unit", "Total"}; 
+    public DefaultTableModel modelo = new DefaultTableModel(colunas, 0); 
+    public JTable tabela = new JTable(modelo);
+    public int j = 30;
+    public JLabel lblTotal = new JLabel();
     public SistemaOperacional(){
         setSize(800,600);
         setTitle("Login Sistema Operacional");
@@ -33,7 +40,9 @@ public class SistemaOperacional extends JFrame{
         lblLogMsg.setFont(new Font("Arial", Font.BOLD, 21));
         lblLogMsg.setAlignmentY(Component.TOP_ALIGNMENT);
 
-        JButton btnEntrar = new JButton("Entrar");
+        BotaoArredondado btnEntrar = new BotaoArredondado("Entrar", j);
+        btnEntrar.setForeground(Color.BLACK);
+        btnEntrar.setBackground(new Color(34, 139, 34));
         btnEntrar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         btnEntrar.setMaximumSize(new Dimension(150, 30));
 
@@ -118,9 +127,9 @@ public class SistemaOperacional extends JFrame{
         jnlOperador.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jnlOperador.setLayout(new BorderLayout());
 
-        JPanel pnlCentralizar = new JPanel();
+        JPanel pnlCentralizar = new JPanel(new BorderLayout());
         pnlCentralizar.setBackground(Color.GRAY);
-        pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(150, 0, 0, 0));
+        pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
         JPanel pnlCaixaStts = new JPanel(new BorderLayout());
         pnlCaixaStts.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
@@ -131,13 +140,93 @@ public class SistemaOperacional extends JFrame{
         lblMsgSttsCaix.setFont(new Font("Arial", Font.BOLD, 22));
         lblMsgSttsCaix.setForeground(new Color(57, 255, 20));
 
+        BotaoArredondado btnCaixaStts = new BotaoArredondado("Fechar Caixa",j);
+        btnCaixaStts.setBackground(Color.RED);
+        btnCaixaStts.setFont(new Font("Arial", Font.BOLD, 13));
+        //tabela.setAlignmentX(LEFT_ALIGNMENT);
+        
+        JScrollPane scroll = new JScrollPane(tabela);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+        JPanel pnlCaixOpera = new JPanel();
+        pnlCaixOpera.setBackground(Color.CYAN);
+        pnlCaixOpera.setLayout(new BoxLayout(pnlCaixOpera, BoxLayout.Y_AXIS));
+        pnlCaixOpera.setPreferredSize(new Dimension(300,500));
+        pnlCaixOpera.setBorder(BorderFactory.createEmptyBorder(150,20,150,20));
+
+        JLayeredPane pnlInofsCaix = new JLayeredPane();
+        pnlInofsCaix.setBorder(BorderFactory.createEmptyBorder(3, 3,3, 3));
+        pnlInofsCaix.setMaximumSize(new Dimension(190,50));
+
+        JLabel lblCodigo = new JLabel("CÓDIGO/SKU (Enter p/ Inserir)");
+        lblCodigo.setFont(new Font("Arial", Font.BOLD, 9));
+
+        JTextField txtCodigo = new JTextField();
+        txtCodigo.setPreferredSize(new Dimension(125, 25));
+
+        JPanel pnlInfosTotal = new JPanel();
+
+        
+        pnlInofsCaix.add(txtCodigo, JLayeredPane.DEFAULT_LAYER);
+        pnlInofsCaix.add(lblCodigo, JLayeredPane.PALETTE_LAYER);
+        
+
+
+        /*lblTotal.setVerticalAlignment(SwingConstants.CENTER);
+        lblTotal.setText("0");
+        lblTotal.setForeground(new Color(34, 139, 34));
+        lblTotal.setFont(new Font("Arial", Font.BOLD, 35));*/
+        
+
+        btnCaixaStts.addActionListener(e ->{
+            String msgCaixaStts = lblMsgSttsCaix.getText();
+            btnCaixaStts.setText("Abrir Caixa");
+            btnCaixaStts.setBackground(Color.GREEN);
+            lblMsgSttsCaix.setText("CAIXA FECHADO");
+            lblMsgSttsCaix.setForeground(Color.RED);
+            if (msgCaixaStts.equals("CAIXA ABERTO")){
+                lblMsgSttsCaix.setText("CAIXA FECHADO");
+                lblMsgSttsCaix.setForeground(Color.RED);
+                btnCaixaStts.setText("Abrir Caixa");
+                btnCaixaStts.setBackground(Color.GREEN);
+                txtCodigo.setText("");
+                txtCodigo.setEditable(false);
+            } else if(msgCaixaStts.equals("CAIXA FECHADO")){
+                lblMsgSttsCaix.setText("CAIXA ABERTO");
+                lblMsgSttsCaix.setForeground(Color.GREEN);
+                btnCaixaStts.setText("Fechar Caixa");
+                btnCaixaStts.setBackground(Color.RED);
+                txtCodigo.setEditable(true);
+                txtCodigo.requestFocusInWindow();
+            }
+        });
+
+        pnlCaixOpera.add(pnlInofsCaix, BorderLayout.CENTER);
+        //pnlCaixOpera.add(lblTotal);
 
         jnlOperador.add(pnlCaixaStts, BorderLayout.NORTH);
         pnlCaixaStts.add(lblMsgSttsCaix, BorderLayout.WEST);
+        pnlCaixaStts.add(btnCaixaStts, BorderLayout.EAST);
+        
+        pnlCentralizar.add(pnlCaixOpera, BorderLayout.EAST);
+        pnlCentralizar.add(scroll, BorderLayout.CENTER); 
         jnlOperador.add(pnlCentralizar, BorderLayout.CENTER);
 
         jnlOperador.setVisible(true);
+        txtCodigo.requestFocusInWindow();
     }
+    public void atualizarTotal() { 
+        double soma = 0; 
+        DefaultTableModel modelo = (DefaultTableModel) tabela.getModel(); 
+        
+        for (int i = 0; i < modelo.getRowCount(); i++) { 
+            // Assume que a coluna 4 é o total do item (Qtd * Valor Unit) 
+            soma += (double) modelo.getValueAt(i, 4); 
+        } 
+        
+        lblTotal.setText(String.format("R$ %.2f", soma)); 
+    } 
     public static void main(String args[]){
         new SistemaOperacional();
     }
