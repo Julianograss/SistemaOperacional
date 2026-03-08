@@ -3,6 +3,7 @@ package atividade3;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -11,7 +12,7 @@ public class SistemaOperacional extends JFrame{
     public String[] colunas = {"Cód", "Descrição", "Qtd", "V.Unit", "Total"}; 
     public DefaultTableModel modelo = new DefaultTableModel(colunas, 0); 
     public JTable tabela = new JTable(modelo);
-    public int j = 30;
+    public int j = 30, EstqBaixo = 10;
     public JLabel lblTotal = new JLabel();
     public SistemaOperacional(){
         setSize(800,600);
@@ -54,22 +55,23 @@ public class SistemaOperacional extends JFrame{
                     pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(300, 0, 0, 0));
                     pnlPainelLogin.setMaximumSize(new Dimension(500, 350));
                     btnEntrar.setMaximumSize(new Dimension(250, 40));
-
                 }
                 else if ((e.getNewState() & Frame.NORMAL) == Frame.NORMAL) {
                     pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(150, 0, 0, 0));
                     pnlPainelLogin.setMaximumSize(new Dimension(300, 150));
                     btnEntrar.setMaximumSize(new Dimension(150, 30));
-
                 }
             }
         });
         JLabel lblUsuario = new JLabel("Usuario: ");
         lblUsuario.setFont(new Font("Arial", Font.PLAIN, 13));
+
         JTextField txtUsuario = new JTextField();
         txtUsuario.setFont(new Font("Arial", Font.LAYOUT_LEFT_TO_RIGHT, 10));
+
         JLabel lblSenha = new JLabel("Senha: ");
         lblSenha.setFont(new Font("Arial", Font.PLAIN, 13));
+
         JPasswordField pswSenhaUsu = new JPasswordField();
 
         //ajusta a mensagem no GridBagLayout
@@ -78,6 +80,7 @@ public class SistemaOperacional extends JFrame{
         c.gridwidth = 2;
         pnlPainelLogin.add(lblLogMsg, c);
         c.gridwidth = 1;
+
         //Usuario
         c.gridx = 0;
         c.gridy = 1;
@@ -87,6 +90,7 @@ public class SistemaOperacional extends JFrame{
         c.weightx = 1.0;
         pnlPainelLogin.add(txtUsuario, c);
         c.weightx = 0;
+
         //Senha 
         c.gridx = 0;
         c.gridy = 2;
@@ -96,6 +100,7 @@ public class SistemaOperacional extends JFrame{
         c.weightx = 1.0;
         pnlPainelLogin.add(pswSenhaUsu, c);
         c.weightx = 0;
+
         //Botao Entrar
         c.gridx = 0;
         c.gridy = 3;
@@ -113,7 +118,10 @@ public class SistemaOperacional extends JFrame{
                 janelaOperador();
             }
         });
+
+
         pnlCentralizar.add(pnlPainelLogin);
+        
         add(pnlCentralizar);
         setVisible(true);
     }
@@ -227,8 +235,6 @@ public class SistemaOperacional extends JFrame{
                 jnlOperador.setVisible(false);
             }
         });
-        
-
         btnCaixaStts.addActionListener(e ->{
             String msgCaixaStts = lblMsgSttsCaix.getText();
             btnCaixaStts.setText("Abrir Caixa");
@@ -294,11 +300,13 @@ public class SistemaOperacional extends JFrame{
     public void atualizarTotal() { 
         double soma = 0; 
         DefaultTableModel modelo = (DefaultTableModel) tabela.getModel(); 
+        
         for (int i = 0; i < modelo.getRowCount(); i++) { 
             // Assume que a coluna 4 é o total do item (Qtd * Valor Unit) 
             Object valor = modelo.getValueAt(i, 4);
             soma += ((Number) valor).doubleValue();
         } 
+        
         lblTotal.setText(String.format("R$ %.2f", soma)); 
     } 
     public void janelaGerente(){
@@ -307,8 +315,9 @@ public class SistemaOperacional extends JFrame{
         jnlGerente.setLayout(new BorderLayout());
         jnlGerente.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jnlGerente.setLocationRelativeTo(null);
+
         JTabbedPane tbdpOpcoes = new JTabbedPane();
-        
+
         JPanel pnlEstoque = new JPanel();
         pnlEstoque.setLayout(new BorderLayout());
         JPanel pnlInfosEstoque = new JPanel();
@@ -331,19 +340,33 @@ public class SistemaOperacional extends JFrame{
         lblAplqFiltr.setPreferredSize(new Dimension(200,25));
 
         JPanel pnlTblEstoque = new JPanel(new BorderLayout());
-
         String[] colunas = {"ID", "Produto", "Categoria", "Estoque Atual", "Preço"};
         DefaultTableModel modeloEstoque = new DefaultTableModel(colunas,0);
-        JTable tabelaEstoque = new JTable(modeloEstoque);
-        JScrollPane scrollEstoque = new JScrollPane(tabelaEstoque);
+        JTable tblEstoque = new JTable(modeloEstoque);
+        JScrollPane scrollEstoque = new JScrollPane(tblEstoque);
 
         modeloEstoque.addRow(new Object[]{1, "Arroz 5kg", "Alimentos", 50, "R$ 25,90"});
         modeloEstoque.addRow(new Object[]{2, "Feijão 1kg", "Alimentos", 30, "R$ 8,90"});
         modeloEstoque.addRow(new Object[]{3, "Oleo de soja", "Alimentos", 20, "R$ 6,20"});
         modeloEstoque.addRow(new Object[]{4, "Coca Cola 2L", "Bebidas", 10, "R$ 12,00"});
-
+        modeloEstoque.addRow(new Object[]{5, "Energético 2L", "Bebidas", 5, "R$ 14,00"});
         pnlTblEstoque.add(scrollEstoque, BorderLayout.CENTER);
-
+        
+        DefaultTableModel modelo = (DefaultTableModel) tblEstoque.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
+        tblEstoque.setRowSorter(sorter);
+        txtBuscProd.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e){
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)"+txtBuscProd.getText()));
+            }
+        });
+        chkFiltro.addActionListener(e -> {
+            if (chkFiltro.isSelected()){
+                sorter.setRowFilter(RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE,10,3));
+            } else {
+                sorter.setRowFilter(null);
+            }
+        });
         pnlInfosEstoque.add(lblBuscProd);
         pnlInfosEstoque.add(txtBuscProd);
         pnlInfosEstoque.add(btnFiltrar);
@@ -359,7 +382,6 @@ public class SistemaOperacional extends JFrame{
         tbdpOpcoes.add("Relatórios", pnlRelatorios);
         tbdpOpcoes.add("Usuários", pnlUsuarios);
         jnlGerente.add(tbdpOpcoes);
-
         jnlGerente.setVisible(true);
     }
     public static void main(String args[]){
