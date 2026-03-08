@@ -1,6 +1,7 @@
 package atividade3;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
@@ -34,13 +35,12 @@ public class SistemaOperacional extends JFrame{
         pnlPainelLogin.setMaximumSize(new Dimension(400, 200));
         pnlPainelLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
         pnlPainelLogin.setAlignmentY(Component.CENTER_ALIGNMENT);
-        //pnlPainelLogin.setBackground(Color.BLACK);
 
         JLabel lblLogMsg = new JLabel("Login", SwingConstants.CENTER);
         lblLogMsg.setFont(new Font("Arial", Font.BOLD, 21));
         lblLogMsg.setAlignmentY(Component.TOP_ALIGNMENT);
 
-        BotaoArredondado btnEntrar = new BotaoArredondado("Entrar", j);
+        JButton btnEntrar = new JButton("Entrar");
         btnEntrar.setForeground(Color.BLACK);
         btnEntrar.setBackground(new Color(34, 139, 34));
         btnEntrar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
@@ -64,16 +64,12 @@ public class SistemaOperacional extends JFrame{
                 }
             }
         });
-
         JLabel lblUsuario = new JLabel("Usuario: ");
         lblUsuario.setFont(new Font("Arial", Font.PLAIN, 13));
-
         JTextField txtUsuario = new JTextField();
         txtUsuario.setFont(new Font("Arial", Font.LAYOUT_LEFT_TO_RIGHT, 10));
-
         JLabel lblSenha = new JLabel("Senha: ");
         lblSenha.setFont(new Font("Arial", Font.PLAIN, 13));
-
         JPasswordField pswSenhaUsu = new JPasswordField();
 
         //ajusta a mensagem no GridBagLayout
@@ -82,7 +78,6 @@ public class SistemaOperacional extends JFrame{
         c.gridwidth = 2;
         pnlPainelLogin.add(lblLogMsg, c);
         c.gridwidth = 1;
-
         //Usuario
         c.gridx = 0;
         c.gridy = 1;
@@ -92,7 +87,6 @@ public class SistemaOperacional extends JFrame{
         c.weightx = 1.0;
         pnlPainelLogin.add(txtUsuario, c);
         c.weightx = 0;
-
         //Senha 
         c.gridx = 0;
         c.gridy = 2;
@@ -102,7 +96,6 @@ public class SistemaOperacional extends JFrame{
         c.weightx = 1.0;
         pnlPainelLogin.add(pswSenhaUsu, c);
         c.weightx = 0;
-
         //Botao Entrar
         c.gridx = 0;
         c.gridy = 3;
@@ -111,16 +104,21 @@ public class SistemaOperacional extends JFrame{
         c.gridwidth = 1;
 
         btnEntrar.addActionListener(e -> {
-            janelaOperador();
+            String usuario = txtUsuario.getText();
+            char[] cSenha = pswSenhaUsu.getPassword();
+            String strSenha = String.valueOf(cSenha);
+            if (usuario.equals("admin") && strSenha.equals("admin")){
+                janelaGerente();
+            } else {
+                janelaOperador();
+            }
         });
-
-
         pnlCentralizar.add(pnlPainelLogin);
-        
         add(pnlCentralizar);
         setVisible(true);
     }
     public void janelaOperador(){
+        BancoFake banco = new BancoFake();
         JFrame jnlOperador = new JFrame("Caixa");
         jnlOperador.setSize(800,600);
         jnlOperador.setLocationRelativeTo(null);
@@ -130,7 +128,6 @@ public class SistemaOperacional extends JFrame{
         JPanel pnlCentralizar = new JPanel(new BorderLayout());
         pnlCentralizar.setBackground(Color.GRAY);
         pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-
         JPanel pnlCaixaStts = new JPanel(new BorderLayout());
         pnlCaixaStts.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
         pnlCaixaStts.setBorder(BorderFactory.createEmptyBorder(0,10,0,0));
@@ -140,10 +137,9 @@ public class SistemaOperacional extends JFrame{
         lblMsgSttsCaix.setFont(new Font("Arial", Font.BOLD, 22));
         lblMsgSttsCaix.setForeground(new Color(57, 255, 20));
 
-        BotaoArredondado btnCaixaStts = new BotaoArredondado("Fechar Caixa",j);
+        JButton btnCaixaStts = new JButton("Fechar Caixa");
         btnCaixaStts.setBackground(Color.RED);
         btnCaixaStts.setFont(new Font("Arial", Font.BOLD, 13));
-        //tabela.setAlignmentX(LEFT_ALIGNMENT);
         
         JScrollPane scroll = new JScrollPane(tabela);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -153,30 +149,84 @@ public class SistemaOperacional extends JFrame{
         pnlCaixOpera.setBackground(Color.CYAN);
         pnlCaixOpera.setLayout(new BoxLayout(pnlCaixOpera, BoxLayout.Y_AXIS));
         pnlCaixOpera.setPreferredSize(new Dimension(300,500));
-        pnlCaixOpera.setBorder(BorderFactory.createEmptyBorder(150,20,150,20));
+        pnlCaixOpera.setBorder(BorderFactory.createEmptyBorder(150,50,150,50));
 
-        JLayeredPane pnlInofsCaix = new JLayeredPane();
-        pnlInofsCaix.setBorder(BorderFactory.createEmptyBorder(3, 3,3, 3));
-        pnlInofsCaix.setMaximumSize(new Dimension(190,50));
+        JPanel pnlInofsCaix = new JPanel(new BorderLayout());
+        pnlInofsCaix.setBackground(Color.WHITE);
+        pnlInofsCaix.setOpaque(true);
+        pnlInofsCaix.setMaximumSize(new Dimension(400,50));
 
-        JLabel lblCodigo = new JLabel("CÓDIGO/SKU (Enter p/ Inserir)");
-        lblCodigo.setFont(new Font("Arial", Font.BOLD, 9));
+        TitledBorder borda = BorderFactory.createTitledBorder("CÓDIGO/SKU (Enter p/ Inserir)");
+        borda.setTitleFont(new Font("Arial", Font.BOLD, 9));
+        pnlInofsCaix.setBorder(borda);
 
         JTextField txtCodigo = new JTextField();
-        txtCodigo.setPreferredSize(new Dimension(125, 25));
-
-        JPanel pnlInfosTotal = new JPanel();
-
         
-        pnlInofsCaix.add(txtCodigo, JLayeredPane.DEFAULT_LAYER);
-        pnlInofsCaix.add(lblCodigo, JLayeredPane.PALETTE_LAYER);
+        pnlInofsCaix.add(txtCodigo, BorderLayout.CENTER);
         
+        JPanel pnlTotal = new JPanel();
+        pnlTotal.setBorder(BorderFactory.createTitledBorder("TOTAL DA VENDA"));
+        pnlTotal.setBackground(Color.WHITE);
+        pnlTotal.setOpaque(true);
+        pnlTotal.setMaximumSize(new Dimension(400,90));
 
+        lblTotal.setFont(new Font("Arial", Font.BOLD, 40));
+        lblTotal.setForeground(new Color(34,139,34));
+        lblTotal.setText("R$  0,00");
 
-        /*lblTotal.setVerticalAlignment(SwingConstants.CENTER);
-        lblTotal.setText("0");
-        lblTotal.setForeground(new Color(34, 139, 34));
-        lblTotal.setFont(new Font("Arial", Font.BOLD, 35));*/
+        pnlTotal.add(lblTotal);
+        pnlCaixOpera.add(Box.createRigidArea(new Dimension(0,30)));
+
+        JLabel lblteclasAtalho = new JLabel("F1 - Finalizar");
+        JLabel lblteclasAtalho1 = new JLabel("F2 - Cancelar Item");
+        JLabel lblteclasAtalho2 = new JLabel("F3 - Sangria");
+        JLabel lblteclasAtalho3 = new JLabel("F5 - Sair");
+
+        JPanel pnlAtalhos = new JPanel(new GridLayout(4,1));
+        pnlAtalhos.setOpaque(false);
+        pnlAtalhos.setMaximumSize(new Dimension(400,90));
+
+        String acao = "finalizaVenda";
+        InputMap im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        im.put(KeyStroke.getKeyStroke("F1"),acao);
+        rootPane.getActionMap().put(acao, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                JOptionPane.showMessageDialog(null, "Venda Finalizada!");
+                lblTotal.setText("R$  0,00");
+                modelo.setRowCount(0);
+            }
+        });
+        String acao1 = "cancelarItem";
+        InputMap im1 = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        im1.put(KeyStroke.getKeyStroke("F2"),acao1);
+        rootPane.getActionMap().put(acao1, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                JOptionPane.showConfirmDialog(null, "Deseja Cancelar?");
+                if (tabela.getSelectedRow() != -1){
+                    modelo.removeRow(tabela.getSelectedRow());
+                }
+            }
+        });
+        String acao2 = "Sangria";
+        InputMap im2 = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        im2.put(KeyStroke.getKeyStroke("F3"),acao2);
+        rootPane.getActionMap().put(acao2, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                String senha = JOptionPane.showInputDialog(null, "Senha do Gerente", "Segurança", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        String acao3 = "Sair";
+        InputMap im3 = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        im3.put(KeyStroke.getKeyStroke("F5"),acao3);
+        rootPane.getActionMap().put(acao3, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                jnlOperador.setVisible(false);
+            }
+        });
         
 
         btnCaixaStts.addActionListener(e ->{
@@ -202,8 +252,33 @@ public class SistemaOperacional extends JFrame{
             }
         });
 
-        pnlCaixOpera.add(pnlInofsCaix, BorderLayout.CENTER);
-        //pnlCaixOpera.add(lblTotal);
+        txtCodigo.addActionListener(e ->{
+            String codigoDigitado = txtCodigo.getText();
+            Produto p = banco.buscar(codigoDigitado);
+
+            if(p != null){
+                DefaultTableModel modelo = (DefaultTableModel) tabela.getModel();
+                double qtd = 1.0;
+                double totalItem = p.preco*qtd;
+
+                modelo.addRow(new Object[]{codigoDigitado, p.nome, qtd, p.preco, totalItem});
+
+                atualizarTotal();
+                txtCodigo.setText("");
+            } else{
+                JOptionPane.showMessageDialog(null, "Produto não cadastrado!");
+                txtCodigo.selectAll();
+            }
+        });
+        pnlCaixOpera.add(pnlInofsCaix);
+        pnlCaixOpera.add(Box.createRigidArea(new Dimension(0,20)));
+        pnlCaixOpera.add(pnlTotal);
+
+        pnlAtalhos.add(lblteclasAtalho);
+        pnlAtalhos.add(lblteclasAtalho1);
+        pnlAtalhos.add(lblteclasAtalho2);
+        pnlAtalhos.add(lblteclasAtalho3);
+        pnlCaixOpera.add(pnlAtalhos);   
 
         jnlOperador.add(pnlCaixaStts, BorderLayout.NORTH);
         pnlCaixaStts.add(lblMsgSttsCaix, BorderLayout.WEST);
@@ -219,16 +294,75 @@ public class SistemaOperacional extends JFrame{
     public void atualizarTotal() { 
         double soma = 0; 
         DefaultTableModel modelo = (DefaultTableModel) tabela.getModel(); 
-        
         for (int i = 0; i < modelo.getRowCount(); i++) { 
             // Assume que a coluna 4 é o total do item (Qtd * Valor Unit) 
-            soma += (double) modelo.getValueAt(i, 4); 
+            Object valor = modelo.getValueAt(i, 4);
+            soma += ((Number) valor).doubleValue();
         } 
-        
         lblTotal.setText(String.format("R$ %.2f", soma)); 
     } 
+    public void janelaGerente(){
+        JFrame jnlGerente = new JFrame();
+        jnlGerente.setSize(800, 600);
+        jnlGerente.setLayout(new BorderLayout());
+        jnlGerente.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jnlGerente.setLocationRelativeTo(null);
+        JTabbedPane tbdpOpcoes = new JTabbedPane();
+        
+        JPanel pnlEstoque = new JPanel();
+        pnlEstoque.setLayout(new BorderLayout());
+        JPanel pnlInfosEstoque = new JPanel();
+        pnlInfosEstoque.setLayout(new FlowLayout(FlowLayout.LEFT));
+        pnlInfosEstoque.setPreferredSize(new Dimension(0, 40));
+        pnlInfosEstoque.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        JLabel lblBuscProd = new JLabel();
+        lblBuscProd.setText("Buscar Produto: ");
+        lblBuscProd.setFont(new Font("Arial", Font.BOLD, 11));
+        lblBuscProd.setPreferredSize(new Dimension(100, 25));
+        JTextField txtBuscProd = new JTextField();
+        txtBuscProd.setPreferredSize(new Dimension(200, 20));
+        JButton btnFiltrar = new JButton("Filtrar");
+        btnFiltrar.setFont(new Font("Arial", Font.BOLD, 12));
+        btnFiltrar.setPreferredSize(new Dimension(75,25));
+        JCheckBox chkFiltro = new JCheckBox();
+        JLabel lblAplqFiltr = new JLabel("Apenas Baixo Estoque");
+        lblAplqFiltr.setFont(new Font("Arial", Font.BOLD, 11));
+        lblAplqFiltr.setPreferredSize(new Dimension(200,25));
+
+        JPanel pnlTblEstoque = new JPanel(new BorderLayout());
+
+        String[] colunas = {"ID", "Produto", "Categoria", "Estoque Atual", "Preço"};
+        DefaultTableModel modeloEstoque = new DefaultTableModel(colunas,0);
+        JTable tabelaEstoque = new JTable(modeloEstoque);
+        JScrollPane scrollEstoque = new JScrollPane(tabelaEstoque);
+
+        modeloEstoque.addRow(new Object[]{1, "Arroz 5kg", "Alimentos", 50, "R$ 25,90"});
+        modeloEstoque.addRow(new Object[]{2, "Feijão 1kg", "Alimentos", 30, "R$ 8,90"});
+        modeloEstoque.addRow(new Object[]{3, "Oleo de soja", "Alimentos", 20, "R$ 6,20"});
+        modeloEstoque.addRow(new Object[]{4, "Coca Cola 2L", "Bebidas", 10, "R$ 12,00"});
+
+        pnlTblEstoque.add(scrollEstoque, BorderLayout.CENTER);
+
+        pnlInfosEstoque.add(lblBuscProd);
+        pnlInfosEstoque.add(txtBuscProd);
+        pnlInfosEstoque.add(btnFiltrar);
+        pnlInfosEstoque.add(chkFiltro);
+        pnlInfosEstoque.add(lblAplqFiltr);
+        pnlEstoque.add(pnlInfosEstoque, BorderLayout.NORTH);
+        pnlEstoque.add(pnlTblEstoque);
+
+        JPanel pnlRelatorios = new JPanel();
+        JPanel pnlUsuarios= new JPanel();
+
+        tbdpOpcoes.add("Estoque", pnlEstoque);
+        tbdpOpcoes.add("Relatórios", pnlRelatorios);
+        tbdpOpcoes.add("Usuários", pnlUsuarios);
+        jnlGerente.add(tbdpOpcoes);
+
+        jnlGerente.setVisible(true);
+    }
     public static void main(String args[]){
         new SistemaOperacional();
     }
 }
-
