@@ -9,10 +9,14 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class SistemaOperacional extends JFrame{
-    public String[] colunas = {"Cód", "Descrição", "Qtd", "V.Unit", "Total"}; 
-    public DefaultTableModel modelo = new DefaultTableModel(colunas, 0); 
-    public JTable tabela = new JTable(modelo);
-    public int j = 30, EstqBaixo = 10;
+    public DefaultTableModel modeloEstoque;
+    public JTable tblEstoque;
+    public double caixVirtual = 10000;
+    public double soma = 0;
+    public double vlrCompr = 0;
+    public DefaultTableModel modelo; 
+    public JTable tblItens;
+    public int j = 30, EstqBaixo = 20;
     public JLabel lblTotal = new JLabel();
     public SistemaOperacional(){
         setSize(800,600);
@@ -42,7 +46,7 @@ public class SistemaOperacional extends JFrame{
         lblLogMsg.setFont(new Font("Arial", Font.BOLD, 21));
         lblLogMsg.setAlignmentY(Component.TOP_ALIGNMENT);
 
-        JButton btnEntrar = new JButton("Entrar");
+        BotaoArredondado btnEntrar = new BotaoArredondado("Entrar", j);
         btnEntrar.setForeground(Color.WHITE);
         btnEntrar.setBackground(new Color(34, 139, 34));
         btnEntrar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
@@ -75,35 +79,21 @@ public class SistemaOperacional extends JFrame{
         JPasswordField pswSenhaUsu = new JPasswordField();
 
         //ajusta a mensagem no GridBagLayout
-        c.gridx = 0;
-        c.gridy = 0;
-        c.gridwidth = 2;
-        pnlPainelLogin.add(lblLogMsg, c);
-        c.gridwidth = 1;
+        c.gridx = 0; c.gridy = 0; c.gridwidth = 2;
+        pnlPainelLogin.add(lblLogMsg, c); c.gridwidth = 1;
         //Usuario
-        c.gridx = 0;
-        c.gridy = 1;
+        c.gridx = 0; c.gridy = 1;
         pnlPainelLogin.add(lblUsuario, c);
-        c.gridx = 1;
-        c.gridy = 1;
-        c.weightx = 1.0;
-        pnlPainelLogin.add(txtUsuario, c);
-        c.weightx = 0;
+        c.gridx = 1; c.gridy = 1; c.weightx = 1.0;
+        pnlPainelLogin.add(txtUsuario, c); c.weightx = 0;
         //Senha 
-        c.gridx = 0;
-        c.gridy = 2;
+        c.gridx = 0; c.gridy = 2;
         pnlPainelLogin.add(lblSenha, c);
-        c.gridx = 1;
-        c.gridy = 2;
-        c.weightx = 1.0;
-        pnlPainelLogin.add(pswSenhaUsu, c);
-        c.weightx = 0;
+        c.gridx = 1; c.gridy = 2; c.weightx = 1.0;
+        pnlPainelLogin.add(pswSenhaUsu, c); c.weightx = 0;
         //Botao Entrar
-        c.gridx = 0;
-        c.gridy = 3;
-        c.gridwidth = 2;
-        pnlPainelLogin.add(btnEntrar, c);
-        c.gridwidth = 1;
+        c.gridx = 0; c.gridy = 3; c.gridwidth = 2;
+        pnlPainelLogin.add(btnEntrar, c); c.gridwidth = 1;
 
         btnEntrar.addActionListener(e -> {
             String usuario = txtUsuario.getText();
@@ -139,13 +129,17 @@ public class SistemaOperacional extends JFrame{
         JLabel lblMsgSttsCaix = new JLabel("CAIXA ABERTO");
         lblMsgSttsCaix.setFont(new Font("Arial", Font.BOLD, 22));
         lblMsgSttsCaix.setForeground(new Color(57, 255, 20));
-        JButton btnCaixaStts = new JButton("Fechar Caixa");
+        BotaoArredondado btnCaixaStts = new BotaoArredondado("Fechar Caixa", j);
         btnCaixaStts.setBackground(Color.RED);
         btnCaixaStts.setFont(new Font("Arial", Font.BOLD, 13));
         
-        JScrollPane scroll = new JScrollPane(tabela);
+        String[] colunas = {"Cód", "Descrição", "Qtd", "V.Unit", "Total"}; 
+
+        modelo = new DefaultTableModel(colunas, 0);
+        tblItens = new JTable(modelo);
+
+        JScrollPane scroll = new JScrollPane(tblItens);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         JPanel pnlCaixOpera = new JPanel();
         pnlCaixOpera.setBackground(new Color(255,240,180,230));
@@ -179,56 +173,16 @@ public class SistemaOperacional extends JFrame{
         pnlTotal.add(lblTotal);
         pnlCaixOpera.add(Box.createRigidArea(new Dimension(0,30)));
 
-        JLabel lblteclasAtalho = new JLabel("F1 - Finalizar");
-        JLabel lblteclasAtalho1 = new JLabel("F2 - Cancelar Item");
-        JLabel lblteclasAtalho2 = new JLabel("F3 - Sangria");
-        JLabel lblteclasAtalho3 = new JLabel("F5 - Sair");
+        JTextArea teclasAtalho = new JTextArea("\nF1 - Finalizar\nF2 - Cancelar Item\nF3 - Sangria\nF5 - Sair");
+        teclasAtalho.setBackground(new Color(255,240,180,100));
+        teclasAtalho.setEditable(false);
+        teclasAtalho.setFocusable(false);
 
-        JPanel pnlAtalhos = new JPanel(new GridLayout(4,1));
+        JPanel pnlAtalhos = new JPanel();
         pnlAtalhos.setOpaque(false);
         pnlAtalhos.setMaximumSize(new Dimension(400,90));
+        pnlAtalhos.setAlignmentX(RIGHT_ALIGNMENT);
 
-        String acao = "finalizaVenda";
-        InputMap im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.put(KeyStroke.getKeyStroke("F1"),acao);
-        rootPane.getActionMap().put(acao, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                JOptionPane.showMessageDialog(null, "Venda Finalizada!");
-                lblTotal.setText("R$  0,00");
-                modelo.setRowCount(0);
-            }
-        });
-        String acao1 = "cancelarItem";
-        InputMap im1 = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im1.put(KeyStroke.getKeyStroke("F2"),acao1);
-        rootPane.getActionMap().put(acao1, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                JOptionPane.showConfirmDialog(null, "Deseja Cancelar?");
-                if (tabela.getSelectedRow() != -1){
-                    modelo.removeRow(tabela.getSelectedRow());
-                }
-            }
-        });
-        String acao2 = "Sangria";
-        InputMap im2 = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im2.put(KeyStroke.getKeyStroke("F3"),acao2);
-        rootPane.getActionMap().put(acao2, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                String senha = JOptionPane.showInputDialog(null, "Senha do Gerente", "Segurança", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-        String acao3 = "Sair";
-        InputMap im3 = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im3.put(KeyStroke.getKeyStroke("F5"),acao3);
-        rootPane.getActionMap().put(acao3, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                jnlOperador.setVisible(false);
-            }
-        });
         btnCaixaStts.addActionListener(e ->{
             String msgCaixaStts = lblMsgSttsCaix.getText();
             btnCaixaStts.setText("Abrir Caixa");
@@ -242,6 +196,8 @@ public class SistemaOperacional extends JFrame{
                 btnCaixaStts.setBackground(Color.GREEN);
                 txtCodigo.setText("");
                 txtCodigo.setEditable(false);
+                modelo.setRowCount(0); 
+                lblTotal.setText("R$  0,00");
             } else if(msgCaixaStts.equals("CAIXA FECHADO")){
                 lblMsgSttsCaix.setText("CAIXA ABERTO");
                 lblMsgSttsCaix.setForeground(Color.GREEN);
@@ -249,6 +205,7 @@ public class SistemaOperacional extends JFrame{
                 btnCaixaStts.setBackground(Color.RED);
                 txtCodigo.setEditable(true);
                 txtCodigo.requestFocusInWindow();
+                modelo.setRowCount(0);
             }
         });
         txtCodigo.addActionListener(e ->{
@@ -256,7 +213,7 @@ public class SistemaOperacional extends JFrame{
             Produto p = banco.buscar(codigoDigitado);
 
             if(p != null){
-                DefaultTableModel modelo = (DefaultTableModel) tabela.getModel();
+                DefaultTableModel modelo = (DefaultTableModel) tblItens.getModel();
                 double qtd = 1.0;
                 double totalItem = p.preco*qtd;
 
@@ -269,14 +226,12 @@ public class SistemaOperacional extends JFrame{
                 txtCodigo.selectAll();
             }
         });
+        
         pnlCaixOpera.add(pnlInofsCaix);
         pnlCaixOpera.add(Box.createRigidArea(new Dimension(0,20)));
         pnlCaixOpera.add(pnlTotal);
 
-        pnlAtalhos.add(lblteclasAtalho);
-        pnlAtalhos.add(lblteclasAtalho1);
-        pnlAtalhos.add(lblteclasAtalho2);
-        pnlAtalhos.add(lblteclasAtalho3);
+        pnlAtalhos.add(teclasAtalho);
         pnlCaixOpera.add(pnlAtalhos);   
 
         jnlOperador.add(pnlCaixaStts, BorderLayout.NORTH);
@@ -287,12 +242,12 @@ public class SistemaOperacional extends JFrame{
         pnlCentralizar.add(scroll, BorderLayout.CENTER); 
         jnlOperador.add(pnlCentralizar, BorderLayout.CENTER);
 
+        configurarAtalhos(jnlOperador);
         jnlOperador.setVisible(true);
-        txtCodigo.requestFocusInWindow();
     }
     public void atualizarTotal() { 
-        double soma = 0; 
-        DefaultTableModel modelo = (DefaultTableModel) tabela.getModel(); 
+        double soma = 0;
+        DefaultTableModel modelo = (DefaultTableModel) tblItens.getModel(); 
         
         for (int i = 0; i < modelo.getRowCount(); i++) { 
             // Assume que a coluna 4 é o total do item (Qtd * Valor Unit) 
@@ -334,8 +289,8 @@ public class SistemaOperacional extends JFrame{
 
         String[] colunas = {"ID", "Produto", "Categoria", "Estoque Atual", "Preço"};
 
-        DefaultTableModel modeloEstoque = new DefaultTableModel(colunas,0);
-        JTable tblEstoque = new JTable(modeloEstoque);
+        modeloEstoque = new DefaultTableModel(colunas,0);
+        tblEstoque = new JTable(modeloEstoque);
 
         JScrollPane scrollEstoque = new JScrollPane(tblEstoque);
 
@@ -344,6 +299,16 @@ public class SistemaOperacional extends JFrame{
         modeloEstoque.addRow(new Object[]{3, "Oleo de soja", "Alimentos", 20, "R$ 6,20"});
         modeloEstoque.addRow(new Object[]{4, "Coca Cola 2L", "Bebidas", 10, "R$ 12,00"});
         modeloEstoque.addRow(new Object[]{5, "Energético 2L", "Bebidas", 5, "R$ 14,00"});
+        modeloEstoque.addRow(new Object[]{6, "Macarrão", "Alimentos", 50, "R$ 5,40"});
+        modeloEstoque.addRow(new Object[]{7, "Açucar", "Alimentos", 40, "R$ 4,70"});
+        modeloEstoque.addRow(new Object[]{8, "Café", "Alimentos", 35, "R$ 18,90"});
+        modeloEstoque.addRow(new Object[]{9, "Detergente 500ml", "Limpeza", 40, "R$ 7,10"});
+        modeloEstoque.addRow(new Object[]{10, "Sabão em pó 4kg", "Limpeza", 10, "R$ 32,50"});
+        modeloEstoque.addRow(new Object[]{11, "Desinfetante 1L", "Limpeza", 20, "R$ 22,30"});
+        modeloEstoque.addRow(new Object[]{12, "Água mineral 500ml", "Bebidas", 100, "R$ 0.80"});
+        modeloEstoque.addRow(new Object[]{13, "Sal", "Alimentos", 30, "R$ 2,50"});
+        modeloEstoque.addRow(new Object[]{14, "Farinha", "Alimentos", 30, "R$ 3,40"});
+        modeloEstoque.addRow(new Object[]{15, "Azeite", "Alimentos", 15, "R$ 19,50"});
 
         pnlTblEstoque.add(scrollEstoque, BorderLayout.CENTER);
 
@@ -358,7 +323,7 @@ public class SistemaOperacional extends JFrame{
         });
         chkFiltro.addActionListener(e -> {
             if (chkFiltro.isSelected()){
-                sorter.setRowFilter(RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE,10,3));
+                sorter.setRowFilter(RowFilter.numberFilter(RowFilter.ComparisonType.BEFORE,EstqBaixo,3));
             } else {
                 sorter.setRowFilter(null);
             }
@@ -372,8 +337,16 @@ public class SistemaOperacional extends JFrame{
         pnlEstoque.add(pnlTblEstoque);
 
         JPanel pnlRelatorios = new JPanel(new FlowLayout());
-        pnlRelatorios.add(new JButton("Gerar PDF de Vendas Mensal"));
-        pnlRelatorios.add(new JButton("Exportar Estoque (CSV)"));
+        JButton btnGeraPDF = new JButton("Gerar PDF de Vendas Mensal");
+        btnGeraPDF.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, vlrCompr);
+        });
+        pnlRelatorios.add(btnGeraPDF);
+        JButton btnCSV = new JButton("Exportar Estoque (CSV)");
+        btnCSV.addActionListener(e -> {
+            exportarCSV();
+        });
+        pnlRelatorios.add(btnCSV);
         
         JPanel pnlUsuarios= new JPanel();
 
@@ -385,6 +358,76 @@ public class SistemaOperacional extends JFrame{
 
         jnlGerente.setVisible(true);
     }
+    private double configurarAtalhos(JFrame frame){
+        InputMap im = frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = frame.getRootPane().getActionMap();
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "F1");
+        am.put("F1", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if(modelo.getRowCount() > 0) {
+                    JOptionPane.showMessageDialog(null, "Venda Finalizada!");
+                    modelo.setRowCount(0);
+                    atualizarTotal();
+                }
+            }
+        });
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0), "F2");
+        am.put("F2", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                int row = tblItens.getSelectedRow();
+                if (row != -1) {
+                    String senha = JOptionPane.showInputDialog("Senha (admin):");
+                    if ("admin".equals(senha)) {
+                        modelo.removeRow(row);
+                        atualizarTotal();
+                    }
+                }
+            }
+        });
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0), "F3");
+        am.put("F3", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                double soma = 0;
+                DefaultTableModel modelo = (DefaultTableModel) tblItens.getModel(); 
+        
+                for (int i = 0; i < modelo.getRowCount(); i++) { 
+                    Object valor = modelo.getValueAt(i, 4);
+                    soma += ((Number) valor).doubleValue();
+                }
+                caixVirtual = caixVirtual-soma;
+                vlrCompr = soma;
+                
+                JOptionPane.showMessageDialog(null, "Valor em caixa: R$"+caixVirtual);
+            }
+        });
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), "F5");
+        am.put("F5", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                frame.setVisible(false);
+            }
+        });
+
+        return vlrCompr;
+    }
+    private void exportarCSV() {
+    try (java.io.FileWriter writer = new java.io.FileWriter("estoque.csv")) {
+        for (int i = 0; i < tblEstoque.getColumnCount(); i++) {
+            writer.write(tblEstoque.getColumnName(i) + ",");
+        }
+        writer.write("\n");
+        
+        for (int i = 0; i < tblEstoque.getRowCount(); i++) {
+            for (int j = 0; j < tblEstoque.getColumnCount(); j++) {
+                writer.write(tblEstoque.getValueAt(i, j).toString() + ",");
+            }
+            writer.write("\n");
+        }
+        JOptionPane.showMessageDialog(this, "Arquivo CSV gerado!");
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
     public static void main(String args[]){
         new SistemaOperacional();
     }
