@@ -24,7 +24,7 @@ public class SistemaOperacional extends JFrame{
         //painel auxiliar para centralizr o painel de login
         JPanel pnlCentralizar = new JPanel();
         pnlCentralizar.setLayout(new BoxLayout(pnlCentralizar, BoxLayout.Y_AXIS));
-        pnlCentralizar.setBackground(Color.GRAY);
+        pnlCentralizar.setBackground(new Color(180,240,240));
         pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(150, 0, 0, 0));
 
         JPanel pnlPainelLogin = new JPanel(new GridBagLayout());
@@ -38,11 +38,12 @@ public class SistemaOperacional extends JFrame{
         pnlPainelLogin.setAlignmentY(Component.CENTER_ALIGNMENT);
 
         JLabel lblLogMsg = new JLabel("Login", SwingConstants.CENTER);
+        lblLogMsg.setForeground(new Color(34, 139, 34));
         lblLogMsg.setFont(new Font("Arial", Font.BOLD, 21));
         lblLogMsg.setAlignmentY(Component.TOP_ALIGNMENT);
 
         JButton btnEntrar = new JButton("Entrar");
-        btnEntrar.setForeground(Color.BLACK);
+        btnEntrar.setForeground(Color.WHITE);
         btnEntrar.setBackground(new Color(34, 139, 34));
         btnEntrar.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         btnEntrar.setMaximumSize(new Dimension(150, 30));
@@ -55,23 +56,22 @@ public class SistemaOperacional extends JFrame{
                     pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(300, 0, 0, 0));
                     pnlPainelLogin.setMaximumSize(new Dimension(500, 350));
                     btnEntrar.setMaximumSize(new Dimension(250, 40));
+
                 }
                 else if ((e.getNewState() & Frame.NORMAL) == Frame.NORMAL) {
                     pnlCentralizar.setBorder(BorderFactory.createEmptyBorder(150, 0, 0, 0));
                     pnlPainelLogin.setMaximumSize(new Dimension(300, 150));
                     btnEntrar.setMaximumSize(new Dimension(150, 30));
+
                 }
             }
         });
-        JLabel lblUsuario = new JLabel("Usuario: ");
+        JLabel lblUsuario = new JLabel("Usuário: ");
         lblUsuario.setFont(new Font("Arial", Font.PLAIN, 13));
-
         JTextField txtUsuario = new JTextField();
         txtUsuario.setFont(new Font("Arial", Font.LAYOUT_LEFT_TO_RIGHT, 10));
-
         JLabel lblSenha = new JLabel("Senha: ");
         lblSenha.setFont(new Font("Arial", Font.PLAIN, 13));
-
         JPasswordField pswSenhaUsu = new JPasswordField();
 
         //ajusta a mensagem no GridBagLayout
@@ -80,7 +80,6 @@ public class SistemaOperacional extends JFrame{
         c.gridwidth = 2;
         pnlPainelLogin.add(lblLogMsg, c);
         c.gridwidth = 1;
-
         //Usuario
         c.gridx = 0;
         c.gridy = 1;
@@ -90,7 +89,6 @@ public class SistemaOperacional extends JFrame{
         c.weightx = 1.0;
         pnlPainelLogin.add(txtUsuario, c);
         c.weightx = 0;
-
         //Senha 
         c.gridx = 0;
         c.gridy = 2;
@@ -100,7 +98,6 @@ public class SistemaOperacional extends JFrame{
         c.weightx = 1.0;
         pnlPainelLogin.add(pswSenhaUsu, c);
         c.weightx = 0;
-
         //Botao Entrar
         c.gridx = 0;
         c.gridy = 3;
@@ -118,8 +115,6 @@ public class SistemaOperacional extends JFrame{
                 janelaOperador();
             }
         });
-
-
         pnlCentralizar.add(pnlPainelLogin);
         
         add(pnlCentralizar);
@@ -144,7 +139,6 @@ public class SistemaOperacional extends JFrame{
         JLabel lblMsgSttsCaix = new JLabel("CAIXA ABERTO");
         lblMsgSttsCaix.setFont(new Font("Arial", Font.BOLD, 22));
         lblMsgSttsCaix.setForeground(new Color(57, 255, 20));
-
         JButton btnCaixaStts = new JButton("Fechar Caixa");
         btnCaixaStts.setBackground(Color.RED);
         btnCaixaStts.setFont(new Font("Arial", Font.BOLD, 13));
@@ -154,7 +148,7 @@ public class SistemaOperacional extends JFrame{
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
         JPanel pnlCaixOpera = new JPanel();
-        pnlCaixOpera.setBackground(Color.CYAN);
+        pnlCaixOpera.setBackground(new Color(255,240,180,230));
         pnlCaixOpera.setLayout(new BoxLayout(pnlCaixOpera, BoxLayout.Y_AXIS));
         pnlCaixOpera.setPreferredSize(new Dimension(300,500));
         pnlCaixOpera.setBorder(BorderFactory.createEmptyBorder(150,50,150,50));
@@ -163,19 +157,19 @@ public class SistemaOperacional extends JFrame{
         pnlInofsCaix.setBackground(Color.WHITE);
         pnlInofsCaix.setOpaque(true);
         pnlInofsCaix.setMaximumSize(new Dimension(400,50));
-
         TitledBorder borda = BorderFactory.createTitledBorder("CÓDIGO/SKU (Enter p/ Inserir)");
         borda.setTitleFont(new Font("Arial", Font.BOLD, 9));
         pnlInofsCaix.setBorder(borda);
 
         JTextField txtCodigo = new JTextField();
-        
+        txtCodigo.setOpaque(false);
+        txtCodigo.setBorder(null);
+
         pnlInofsCaix.add(txtCodigo, BorderLayout.CENTER);
         
         JPanel pnlTotal = new JPanel();
         pnlTotal.setBorder(BorderFactory.createTitledBorder("TOTAL DA VENDA"));
         pnlTotal.setBackground(Color.WHITE);
-        pnlTotal.setOpaque(true);
         pnlTotal.setMaximumSize(new Dimension(400,90));
 
         lblTotal.setFont(new Font("Arial", Font.BOLD, 40));
@@ -257,7 +251,6 @@ public class SistemaOperacional extends JFrame{
                 txtCodigo.requestFocusInWindow();
             }
         });
-
         txtCodigo.addActionListener(e ->{
             String codigoDigitado = txtCodigo.getText();
             Produto p = banco.buscar(codigoDigitado);
@@ -306,7 +299,6 @@ public class SistemaOperacional extends JFrame{
             Object valor = modelo.getValueAt(i, 4);
             soma += ((Number) valor).doubleValue();
         } 
-        
         lblTotal.setText(String.format("R$ %.2f", soma)); 
     } 
     public void janelaGerente(){
@@ -315,7 +307,6 @@ public class SistemaOperacional extends JFrame{
         jnlGerente.setLayout(new BorderLayout());
         jnlGerente.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jnlGerente.setLocationRelativeTo(null);
-
         JTabbedPane tbdpOpcoes = new JTabbedPane();
 
         JPanel pnlEstoque = new JPanel();
@@ -340,9 +331,12 @@ public class SistemaOperacional extends JFrame{
         lblAplqFiltr.setPreferredSize(new Dimension(200,25));
 
         JPanel pnlTblEstoque = new JPanel(new BorderLayout());
+
         String[] colunas = {"ID", "Produto", "Categoria", "Estoque Atual", "Preço"};
+
         DefaultTableModel modeloEstoque = new DefaultTableModel(colunas,0);
         JTable tblEstoque = new JTable(modeloEstoque);
+
         JScrollPane scrollEstoque = new JScrollPane(tblEstoque);
 
         modeloEstoque.addRow(new Object[]{1, "Arroz 5kg", "Alimentos", 50, "R$ 25,90"});
@@ -350,11 +344,13 @@ public class SistemaOperacional extends JFrame{
         modeloEstoque.addRow(new Object[]{3, "Oleo de soja", "Alimentos", 20, "R$ 6,20"});
         modeloEstoque.addRow(new Object[]{4, "Coca Cola 2L", "Bebidas", 10, "R$ 12,00"});
         modeloEstoque.addRow(new Object[]{5, "Energético 2L", "Bebidas", 5, "R$ 14,00"});
+
         pnlTblEstoque.add(scrollEstoque, BorderLayout.CENTER);
-        
+
         DefaultTableModel modelo = (DefaultTableModel) tblEstoque.getModel();
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
         tblEstoque.setRowSorter(sorter);
+
         txtBuscProd.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e){
                 sorter.setRowFilter(RowFilter.regexFilter("(?i)"+txtBuscProd.getText()));
@@ -375,13 +371,18 @@ public class SistemaOperacional extends JFrame{
         pnlEstoque.add(pnlInfosEstoque, BorderLayout.NORTH);
         pnlEstoque.add(pnlTblEstoque);
 
-        JPanel pnlRelatorios = new JPanel();
+        JPanel pnlRelatorios = new JPanel(new FlowLayout());
+        pnlRelatorios.add(new JButton("Gerar PDF de Vendas Mensal"));
+        pnlRelatorios.add(new JButton("Exportar Estoque (CSV)"));
+        
         JPanel pnlUsuarios= new JPanel();
 
         tbdpOpcoes.add("Estoque", pnlEstoque);
         tbdpOpcoes.add("Relatórios", pnlRelatorios);
         tbdpOpcoes.add("Usuários", pnlUsuarios);
+
         jnlGerente.add(tbdpOpcoes);
+
         jnlGerente.setVisible(true);
     }
     public static void main(String args[]){
